@@ -35,7 +35,7 @@ jobs:
         echo "CONFIG_PACKAGE_kmod-usb-audio=y" >> .config
         echo "CONFIG_PACKAGE_alsa-utils=y" >> .config
         
-        # Добавяме уеб интерфейса LuCI и български превод
+        # Уеб интерфейс LuCI и български превод
         echo "CONFIG_PACKAGE_luci=y" >> .config
         echo "CONFIG_PACKAGE_luci-ssl=y" >> .config
         echo "CONFIG_PACKAGE_luci-i18n-base-bg=y" >> .config
@@ -50,5 +50,5 @@ jobs:
     - name: Upload OpenWrt Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: openwrt-amlogic-rootfs
-        path: openwrt/bin/targets/amlogic/*/*
+        name: openwrt-amlogic-files
+        path: openwrt/bin/targets/
