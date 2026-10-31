@@ -25,7 +25,7 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
-    - name: Configure custom options (Audio, ALSA & LuCI)
+    - name: Configure custom options (Audio & ALSA)
       run: |
         cd openwrt
         echo "CONFIG_TARGET_amlogic=y" >> .config
@@ -50,5 +50,5 @@ jobs:
     - name: Upload OpenWrt Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: openwrt-amlogic-files
+        name: openwrt-amlogic-targets
         path: openwrt/bin/targets/
