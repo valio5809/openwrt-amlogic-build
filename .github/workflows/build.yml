@@ -25,7 +25,7 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
-    - name: Configure custom options (Audio & ALSA)
+    - name: Configure custom options (Audio, ALSA & LuCI)
       run: |
         cd openwrt
         echo "CONFIG_TARGET_amlogic=y" >> .config
@@ -35,9 +35,20 @@ jobs:
         echo "CONFIG_PACKAGE_kmod-usb-audio=y" >> .config
         echo "CONFIG_PACKAGE_alsa-utils=y" >> .config
         
+        # Добавяме уеб интерфейса LuCI и български превод
+        echo "CONFIG_PACKAGE_luci=y" >> .config
+        echo "CONFIG_PACKAGE_luci-ssl=y" >> .config
+        echo "CONFIG_PACKAGE_luci-i18n-base-bg=y" >> .config
+        
         make defconfig
 
     - name: Build OpenWrt
       run: |
         cd openwrt
         make -j$(nproc) || make -j1 V=s
+
+    - name: Upload OpenWrt Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: openwrt-amlogic-rootfs
+        path: openwrt/bin/targets/amlogic/*/*
