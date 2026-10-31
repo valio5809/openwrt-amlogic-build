@@ -1,0 +1,43 @@
+name: Build OpenWrt for Amlogic
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Initialize environment & dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y build-essential clang flex bison g++ gawk gcc-multilib g++-multilib \
+          gettext git libncurses5-dev libssl-dev python3-distutils rsync unzip zlib1g-dev \
+          file wget swig libelf-dev
+
+    - name: Clone OpenWrt Source
+      run: |
+        git clone https://github.com/openwrt/openwrt.git openwrt
+        cd openwrt
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+
+    - name: Configure custom options (Audio & ALSA)
+      run: |
+        cd openwrt
+        echo "CONFIG_TARGET_amlogic=y" >> .config
+        echo "CONFIG_SOUND=y" >> .config
+        echo "CONFIG_SND=y" >> .config
+        echo "CONFIG_PACKAGE_kmod-sound-core=y" >> .config
+        echo "CONFIG_PACKAGE_kmod-usb-audio=y" >> .config
+        echo "CONFIG_PACKAGE_alsa-utils=y" >> .config
+        
+        make defconfig
+
+    - name: Build OpenWrt
+      run: |
+        cd openwrt
+        make -j$(nproc) || make -j1 V=s
