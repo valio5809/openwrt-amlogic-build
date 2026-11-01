@@ -3,6 +3,9 @@ name: Build OpenWrt for Amlogic
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -27,9 +30,13 @@ jobs:
         cd openwrt_builder
         sudo ./make -d -b "s905" -k "6.1.y" -a "y"
 
-    - name: Upload Generated Images
-      uses: actions/upload-artifact@v4
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      if: success()
       with:
-        name: openwrt-amlogic-s905-img
-        path: openwrt_builder/out/*.img
-        if-no-files-found: ignore
+        tag_name: v1.0-s905
+        name: "OpenWrt S905 Ready Image"
+        body: "Автоматично компилиран OpenWrt image за Amlogic S905."
+        files: openwrt_builder/out/*.img
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
