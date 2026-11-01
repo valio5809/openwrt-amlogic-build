@@ -27,8 +27,17 @@ jobs:
 
     - name: Build and Pack Image
       run: |
+        # Задължаваме шела да спира при първата възникнала грешка
+        set -e
+
         cd openwrt_builder
         sudo ./make -d -b "s905" -k "6.1.y" -a "y"
+
+        # Строга проверка: ако файлът не е създаден, срини задачата веднага
+        if [ ! -f out/*.img ]; then
+          echo "КРИТИЧНА ГРЕШКА: Изходният .img файл не беше открит в папка out/!"
+          exit 1
+        fi
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
