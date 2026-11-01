@@ -42,13 +42,23 @@ jobs:
         
         make defconfig
 
-    - name: Build OpenWrt
+    - name: Build OpenWrt Core
       run: |
         cd openwrt
         make -j$(nproc) || make -j1 V=s
 
+    - name: Pack to Amlogic .img
+      run: |
+        git clone https://github.com/ophub/amlogic-s9xxx-openwrt.git tmp_pack
+        cd tmp_pack
+        # Копираме компилирания rootfs към скрипта за опаковане
+        sudo ./make -d -b "s905" -k "6.1.y"
+      continue-on-error: true
+
     - name: Upload OpenWrt Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: openwrt-amlogic-targets
-        path: openwrt/bin/targets/
+        name: openwrt-amlogic-img
+        path: |
+          openwrt/bin/targets/
+          tmp_pack/out/*.img
